@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dental X-ray Analysis System</title>
+  <style>
+    /* Background image */
+    
+    body {
+      
+      background-image: url('one.jpg');
+
+      /* background-size: cover;  
+      background-position: center;   */
+      background-color: rgb(12, 2, 36);
+    }
+    h1,p {text-align: center;
+      color: white;}
+
+    /* Form with a speech bubble style */
+    form {
+      width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 20px;
+      background-color: #070b4e7c;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      position: relative;  /* Necessary for speech bubble pseudo-element */
+    }
+
+    form:after {
+      content: "";
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 20px solid #fdfdfd;  /* Matches form background color */
+    }
+
+
+    /* Label styling */
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #f9faf9;
+    }
+
+    /* File input styling */
+    input[type="file"] {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    /* Button styling */
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;  /* Green */
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Display uploaded image below the form */
+    #uploaded-image {
+      display: block;
+      margin: 20px auto;
+      max-width: 100px;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>Dental X-ray Analysis System</h1>
+  <img id="uploaded-image" alt="Uploaded X-Ray Image" />
+
+  <form method="POST" enctype="multipart/form-data" id="upload-form">
+
+    <label for="image">Upload X-Ray Image:</label>
+    <input type="file" id="image" name="image" accept="image/*" required>
+    <br>
+    <button type="submit">Predict</button>
+  </form>
+  <p id="prediction"></p>
+  
+  <script>
+    const form = document.getElementById('upload-form');
+    const predictionText = document.getElementById('prediction');
+    const uploadedImage = document.getElementById('uploaded-image');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent default form submission
+
+      const formData = new FormData(form);
+      fetch('/predict', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        predictionText.textContent = data.message;
+      })
+      .catch(error => {
+        console.error(error);
+        predictionText.textContent = "An error occurred. Please try again.";
+      });
+    });
+
+    // Update uploaded image display on file selection
+    form.querySelector('#image').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        uploadedImage.src = URL.createObjectURL(file);
+      } else {
+        uploadedImage.src = "";
+      }
+    });
+  </script>
+</body>
+</html>
